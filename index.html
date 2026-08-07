@@ -355,7 +355,7 @@ async function createRoom(){
     state.code = code; state.metaId = metaId; state.role = 'a';
     state.answers = Array(50).fill(0); state.submitted = false; state.name = '';
     saveLS();
-    renderRoomSetup(true);
+    location.hash = '#/r/' + code + '/' + metaId;
   }catch(e){ renderError('Не удалось создать комнату. Проверь интернет и попробуй ещё раз.'); }
 }
 
@@ -372,15 +372,12 @@ async function joinByCode(){
 
 function renderRoomSetup(isCreator){
   const mine = loadLS(state.metaId);
-  if(mine && mine.submitted && mine.role){
-    state.role = mine.role; state.name = mine.name; state.answers = mine.answers; state.submitted = true;
-    renderWaiting(); return;
-  }
   if(mine && mine.role){
-    state.role = mine.role; state.name = mine.name; state.answers = mine.answers; state.submitted = false;
-    renderNameStep(); return;
+    state.role = mine.role; state.name = mine.name; state.answers = mine.answers; state.submitted = mine.submitted;
   }
-  if(isCreator){
+  if(state.submitted){ renderWaiting(); return; }
+  if(state.role==='a'){
+    // создатель всегда видит экран со ссылкой и кодом, пока не ответил
     show(`
       <div class="card hero">
         <div class="emoji">🎁</div>
@@ -400,9 +397,9 @@ function renderRoomSetup(isCreator){
         <button class="btn" onclick="renderNameStep()">Начать тест →</button>
       </div>
     `);
-  }else{
-    renderNameStep();
+    return;
   }
+  renderNameStep();
 }
 
 function renderJoinConflict(){
@@ -677,6 +674,7 @@ function route(){
     if(mine && mine.role){
       state.role = mine.role; state.name = mine.name; state.answers = mine.answers; state.submitted = mine.submitted;
       if(mine.submitted){ renderWaiting(); }
+      else if(mine.role==='a'){ renderRoomSetup(); }
       else { renderNameStep(); }
     }else{
       state.role = 'b';
