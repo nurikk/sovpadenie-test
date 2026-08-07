@@ -319,11 +319,10 @@ function renderLanding(){
     <div class="card">
       <button class="btn" onclick="createRoom()">✨ Создать комнату</button>
       <div class="divider"></div>
-      <div class="join-row">
-        <input type="text" id="codeIn" maxlength="5" placeholder="КОД" autocomplete="off">
-        <button class="btn" onclick="joinByCode()">Войти</button>
-      </div>
-      <p class="hint">Второй партнёр вводит код комнаты или открывает присланную ссылку</p>
+      <p class="hint" style="text-align:left;margin:0 0 8px">Есть код комнаты?</p>
+      <input type="text" id="codeIn" maxlength="5" placeholder="Например, K7XQ2" autocomplete="off" style="letter-spacing:4px;text-transform:uppercase;margin-bottom:10px">
+      <button class="btn ghost" onclick="joinByCode()">Войти по коду</button>
+      <p class="hint" style="margin-top:10px">Второй партнёр вводит код комнаты или открывает присланную ссылку</p>
     </div>
     <div class="card">
       <div class="steps">
