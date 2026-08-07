@@ -146,6 +146,27 @@
   @keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
   .err{text-align:center;color:var(--bad);font-size:14.5px;padding:8px 0}
   .note{font-size:13px;color:var(--muted);text-align:center;margin-top:22px}
+  /* мобильные экраны: чуть больше воздуха */
+  @media (max-width:480px){
+    .wrap{padding:20px 18px 56px}
+    .card{padding:24px 20px}
+    .hero{padding:24px 16px 28px}
+    .scale button{padding:12px 4px 10px}
+    .scale{gap:7px}
+    .qtext{margin:10px 0 22px}
+    .qmeta{margin-bottom:8px}
+    .nav-row{margin-top:18px}
+    .qcard{padding:18px 18px}
+    .row{margin-top:14px}
+    .divider{margin:20px 0}
+    .chip{padding:11px 8px}
+    .tabs{gap:8px}
+    .tab{padding:11px 6px}
+    input[type=text]{padding:15px 16px}
+    .btn{padding:16px 18px}
+    .steps{gap:14px}
+    .code{letter-spacing:9px;font-size:42px}
+  }
   .toast{
     position:fixed;left:50%;bottom:28px;transform:translateX(-50%) translateY(80px);
     background:#3b2a3a;color:#fff;padding:12px 20px;border-radius:99px;font-size:14px;font-weight:600;
@@ -388,7 +409,7 @@ function renderRoomSetup(isCreator){
         <div class="code">${esc(state.code)}</div>
         <p class="hint">или просто отправь ссылку</p>
         <button class="btn" onclick="shareRoom()">📤 Поделиться ссылкой</button>
-        <div class="row" style="margin-top:10px">
+        <div class="row" style="margin-top:14px">
           <button class="btn soft small" onclick="copyLink()">🔗 Копировать</button>
           <button class="btn soft small" onclick="openTg()">✈️ Telegram</button>
         </div>
@@ -535,7 +556,7 @@ function renderWaiting(){
       <div class="wait-sub">Ждём ответы партнёра…</div>
       <p class="hint" style="margin-top:14px">Не забудь отправить ссылку:</p>
       <button class="btn" onclick="shareRoom()">📤 Поделиться ссылкой</button>
-      <div class="row" style="margin-top:10px">
+      <div class="row" style="margin-top:14px">
         <button class="btn soft small" onclick="copyLink()">🔗 Копировать</button>
         <button class="btn soft small" onclick="openTg()">✈️ Telegram</button>
       </div>
