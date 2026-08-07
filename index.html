@@ -1,0 +1,708 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Насколько совпадают наши предпочтения</title>
+<meta name="theme-color" content="#f43f5e">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💞</text></svg>">
+<style>
+  :root{
+    --rose:#f43f5e; --violet:#8b5cf6; --peach:#fb923c;
+    --ink:#3b2a3a; --muted:#8a7486; --line:#f1e3ee;
+    --bg1:#fdf2f8; --bg2:#f3f0ff; --bg3:#fff7ed;
+    --card:#ffffff; --good:#10b981; --warn:#f59e0b; --bad:#ef4444;
+    --r:20px;
+  }
+  *{box-sizing:border-box; -webkit-tap-highlight-color:transparent}
+  html,body{margin:0;padding:0}
+  body{
+    font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+    color:var(--ink);
+    background:linear-gradient(160deg,var(--bg1),var(--bg2) 55%,var(--bg3));
+    background-attachment:fixed;
+    min-height:100dvh;
+    line-height:1.45;
+  }
+  .wrap{max-width:560px;margin:0 auto;padding:20px 16px 48px}
+  .card{
+    background:var(--card);border-radius:var(--r);
+    box-shadow:0 10px 34px rgba(180,110,160,.13);
+    padding:22px;margin-bottom:16px;
+  }
+  h1,h2,h3{margin:0 0 8px;line-height:1.2}
+  p{margin:0 0 10px}
+  .hero{text-align:center;padding:26px 18px 30px}
+  .hero .emoji{font-size:52px}
+  .hero h1{font-size:26px;letter-spacing:-.3px}
+  .hero p{color:var(--muted);font-size:15px;max-width:420px;margin:6px auto 0}
+  .btn{
+    display:flex;align-items:center;justify-content:center;gap:8px;
+    width:100%;border:none;border-radius:16px;padding:15px 18px;
+    font-size:16px;font-weight:700;font-family:inherit;cursor:pointer;
+    background:linear-gradient(135deg,var(--rose),var(--violet));color:#fff;
+    box-shadow:0 8px 22px rgba(244,63,94,.32);
+    transition:transform .12s ease, box-shadow .12s ease;
+  }
+  .btn:active{transform:scale(.97)}
+  .btn.ghost{background:#fff;color:var(--ink);box-shadow:inset 0 0 0 1.5px var(--line)}
+  .btn.soft{background:#fdf0f7;color:var(--rose);box-shadow:none}
+  .btn.small{padding:11px 14px;font-size:14px;border-radius:12px;box-shadow:none}
+  .btn:disabled{opacity:.55;pointer-events:none}
+  .row{display:flex;gap:10px}
+  .row .btn{flex:1}
+  input[type=text]{
+    width:100%;border:1.5px solid var(--line);border-radius:14px;padding:14px 16px;
+    font-size:17px;font-family:inherit;background:#fff;color:var(--ink);outline:none;
+  }
+  input[type=text]:focus{border-color:var(--rose)}
+  .code-box{
+    text-align:center;padding:6px 0 2px;
+  }
+  .code{
+    font-size:44px;font-weight:800;letter-spacing:10px;text-align:center;
+    color:var(--rose);background:linear-gradient(135deg,var(--rose),var(--violet));
+    -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;
+    margin:10px 0 2px;user-select:all;
+  }
+  .hint{color:var(--muted);font-size:13.5px;text-align:center;margin:10px 0 4px}
+  .steps{display:flex;flex-direction:column;gap:12px;margin:14px 0 4px}
+  .step{display:flex;gap:12px;align-items:flex-start}
+  .step .n{
+    flex:0 0 30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+    background:#fdeef7;color:var(--rose);font-weight:800;font-size:14px;
+  }
+  .step b{display:block;font-size:14.5px}
+  .step span{font-size:13.5px;color:var(--muted)}
+  .divider{height:1px;background:var(--line);margin:18px 0}
+  .join-row{display:flex;gap:8px}
+  .join-row input{flex:1;text-transform:uppercase;letter-spacing:3px;text-align:center}
+  .join-row .btn{flex:0 0 auto;padding:14px 18px}
+  /* progress */
+  .prog{height:8px;border-radius:99px;background:#f6e7f2;overflow:hidden;margin-bottom:14px}
+  .prog i{display:block;height:100%;border-radius:99px;background:linear-gradient(90deg,var(--rose),var(--violet));transition:width .25s ease}
+  .qmeta{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;font-size:13px;color:var(--muted)}
+  .qblock{display:inline-flex;align-items:center;gap:6px;background:#fdf0f7;color:var(--rose);font-weight:700;border-radius:99px;padding:5px 12px;font-size:12.5px}
+  .qtext{font-size:20px;font-weight:700;letter-spacing:-.2px;margin:8px 0 20px;line-height:1.35}
+  .scale{display:flex;gap:8px}
+  .scale button{
+    flex:1;aspect-ratio:1/1.05;border:none;border-radius:16px;background:#fbf3f9;cursor:pointer;
+    display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;
+    box-shadow:inset 0 0 0 1.5px var(--line);transition:all .12s ease;font-family:inherit;
+  }
+  .scale button b{font-size:22px;color:var(--ink)}
+  .scale button span{font-size:10px;color:var(--muted);text-align:center;line-height:1.1;padding:0 2px}
+  .scale button.sel{background:linear-gradient(135deg,var(--rose),var(--violet));box-shadow:0 6px 18px rgba(244,63,94,.35);transform:scale(1.04)}
+  .scale button.sel b{color:#fff}
+  .scale button.sel span{color:#ffe4ef}
+  .nav-row{display:flex;justify-content:space-between;margin-top:16px;align-items:center}
+  .back{background:none;border:none;color:var(--muted);font-size:14px;cursor:pointer;font-family:inherit;padding:8px 0}
+  .qcount{font-size:13px;color:var(--muted)}
+  /* waiting */
+  .spin{
+    width:46px;height:46px;margin:18px auto;border-radius:50%;
+    border:4px solid #f9e2f1;border-top-color:var(--rose);
+    animation:sp 1s linear infinite;
+  }
+  @keyframes sp{to{transform:rotate(360deg)}}
+  .wait-title{text-align:center;font-size:18px;font-weight:800}
+  .wait-sub{text-align:center;color:var(--muted);font-size:14.5px;margin-top:4px}
+  .pulse{animation:pulse 1.6s ease infinite}
+  @keyframes pulse{50%{transform:scale(1.12)}}
+  /* results */
+  .verdict{text-align:center;padding:26px 16px}
+  .verdict .big{font-size:58px;display:block;margin-bottom:10px}
+  .verdict h2{font-size:23px}
+  .verdict p{color:var(--muted);font-size:14.5px;max-width:420px;margin:0 auto}
+  .chips{display:flex;gap:10px;justify-content:center;margin:18px 0 2px;flex-wrap:wrap}
+  .chip{border-radius:14px;padding:10px 14px;text-align:center;min-width:88px;flex:1;max-width:130px}
+  .chip b{display:block;font-size:22px}
+  .chip span{font-size:11.5px;color:var(--muted);font-weight:600}
+  .chip.good{background:#e7f9f1;color:var(--good)}
+  .chip.talk{background:#fdf3e0;color:var(--warn)}
+  .chip.miss{background:#fdeaea;color:var(--bad)}
+  .blk{margin-bottom:14px}
+  .blk-head{display:flex;justify-content:space-between;font-size:14px;font-weight:700;margin-bottom:6px}
+  .blk-head .m{font-weight:600;font-size:12.5px;color:var(--muted)}
+  .bar{height:8px;border-radius:99px;background:#f6e7f2;overflow:hidden;display:flex}
+  .bar i.g{background:var(--good)} .bar i.t{background:var(--warn)} .bar i.m{background:var(--bad)}
+  .tabs{display:flex;gap:8px;margin-bottom:14px}
+  .tab{
+    flex:1;border:none;border-radius:12px;padding:10px 6px;font-size:12.5px;font-weight:700;cursor:pointer;
+    background:#fff;color:var(--muted);box-shadow:inset 0 0 0 1.5px var(--line);font-family:inherit;
+  }
+  .tab.on{color:#fff;background:linear-gradient(135deg,var(--rose),var(--violet));box-shadow:none}
+  .qcard{padding:16px 18px}
+  .qcard .qt{font-size:14.5px;font-weight:600;margin-bottom:10px}
+  .qcard .an{display:flex;justify-content:space-between;gap:10px;align-items:center}
+  .ans{display:flex;flex-direction:column;flex:1;gap:4px}
+  .ans span{font-size:11px;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.4px}
+  .ans .pill{align-self:flex-start;border-radius:10px;padding:6px 12px;font-size:15px;font-weight:800;color:#fff}
+  .diff{flex:0 0 auto;border-radius:99px;padding:6px 12px;font-size:12px;font-weight:800}
+  .diff.match{background:#e7f9f1;color:var(--good)}
+  .diff.talk{background:#fdf3e0;color:var(--warn)}
+  .diff.miss{background:#fdeaea;color:var(--bad)}
+  .fade{animation:fade .35s ease}
+  @keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+  .err{text-align:center;color:var(--bad);font-size:14.5px;padding:8px 0}
+  .note{font-size:13px;color:var(--muted);text-align:center;margin-top:22px}
+  .toast{
+    position:fixed;left:50%;bottom:28px;transform:translateX(-50%) translateY(80px);
+    background:#3b2a3a;color:#fff;padding:12px 20px;border-radius:99px;font-size:14px;font-weight:600;
+    transition:transform .25s ease;z-index:50;max-width:86vw;text-align:center;
+  }
+  .toast.show{transform:translateX(-50%) translateY(0)}
+  .hidden{display:none!important}
+  .name-row{margin-bottom:14px}
+</style>
+</head>
+<body>
+<div class="wrap" id="app"></div>
+<div class="toast" id="toast"></div>
+
+<script>
+/* ================= DATA ================= */
+const BLOCKS = [
+  {name:'Досуг и отдых', emoji:'🌿'},
+  {name:'Быт и образ жизни', emoji:'🏠'},
+  {name:'Общение и круг людей', emoji:'🫂'},
+  {name:'Ценности и мировоззрение', emoji:'🧭'},
+  {name:'Близость и эмоциональное взаимодействие', emoji:'❤️‍🔥'},
+];
+const QUESTIONS = [
+['Активный отдых (походы, спорт, движение) приносит мне удовольствие'],
+['Мне важно иметь много спокойных вечеров дома, а не постоянно куда-то ходить'],
+['Путешествия — это то, без чего я не представляю свою жизнь'],
+['Мне одинаково приятно провести выходные и в компании, и в одиночестве'],
+['Я люблю пробовать новое (еду, места, активности), даже если это риск не понравиться'],
+['Ранний подъем и активное начало дня — это мое'],
+['Ночная жизнь, вечеринки, громкие мероприятия меня привлекают'],
+['Чтение книг — регулярная часть моего досуга'],
+['Просмотр фильмов или сериалов — один из главных способов моего отдыха'],
+['Мне важно иметь хобби, которое я развиваю годами, а не меняю каждый месяц'],
+['Порядок и чистота дома — это то, на что я обращаю внимание ежедневно'],
+['Мне комфортно, когда есть четкое распределение бытовых обязанностей'],
+['Готовка еды — это удовольствие, а не обязанность'],
+['Я легко адаптируюсь к новому графику или изменению привычного уклада'],
+['Животные дома — это важная часть моего образа жизни'],
+['Мне важно иметь личное пространство даже в общем доме'],
+['Деньги я трачу скорее спонтанно, чем по плану'],
+['Я отдаю предпочтение сбережениям перед спонтанными покупками'],
+['Мне некомфортно, когда дома долго нет порядка'],
+['Планирование бюджета на месяц вперед — привычная для меня практика'],
+['Большая компания друзей — источник энергии, а не усталости'],
+['Мне комфортнее с одним-двумя близкими людьми, чем в большой группе'],
+['Отношения с семьей партнера для меня очень важны'],
+['Я легко поддерживаю разговор с незнакомыми людьми'],
+['Мне важно регулярно видеться со своими друзьями отдельно от партнера'],
+['Социальные сети и публичность — естественная часть моей жизни'],
+['Я отдаю предпочтение глубоким разговорам перед легким светским общением'],
+['Мне нужно много времени в одиночестве, чтобы восстановить силы'],
+['Юмор и ирония — важная часть того, как я общаюсь'],
+['Мне важно, чтобы партнер поддерживал мои отношения с друзьями и семьей'],
+['Карьера и профессиональное развитие — один из главных приоритетов в моей жизни'],
+['Семья и дети важнее для меня, чем карьерные достижения'],
+['Религия или духовность играют значительную роль в моей жизни'],
+['Политические взгляды — тема, которую важно обсуждать и согласовывать с партнером'],
+['Я считаю, что финансовые решения стоит принимать совместно, а не единолично'],
+['Личное развитие (курсы, терапия, чтение) — постоянная часть моей жизни'],
+['Я ценю традиции (семейные, религиозные, культурные) и хочу их придерживаться'],
+['Равенство в распределении ролей в отношениях для меня принципиально'],
+['Я готов(-а) изменить место проживания ради карьеры или возможностей'],
+['Волонтерство или общественная деятельность — важная часть моей жизни'],
+['Мне важно говорить о своих чувствах вслух, а не молчать о них'],
+['Физический контакт (объятия, прикосновения) — главный способ почувствовать близость'],
+['Я легко извиняюсь первым(-ой), когда понимаю, что был(-а) неправ(-а)'],
+['Мне нужно время в одиночестве после конфликта, прежде чем говорить дальше'],
+['Комплименты и слова поддержки — то, что мне важно слышать регулярно'],
+['Я считаю, что ревность — естественная часть здоровых отношений'],
+['Мне важно иметь общие ритуалы с партнером (традиции, привычки, мелочи)'],
+['Я легко принимаю помощь от партнера, когда мне трудно'],
+['Юмор и легкость в сложные моменты помогают мне больше, чем серьезные разговоры'],
+['Планы на будущее (где жить, иметь ли детей, как строить жизнь) — тема, которую я хочу обсудить сейчас, а не откладывать'],
+].map((t,i)=>({text:t[0], block:Math.floor(i/10), n:(i%10)+1}));
+const SCALE = [
+  ['1','Совсем не моё'], ['2','Скорее нет'], ['3','Нейтрально'], ['4','Скорее да'], ['5','Точно моё'],
+];
+const VERDICTS = [
+  {max:5,  emoji:'💞', title:'Вы очень близки!', text:'Ваши предпочтения и интересы в целом очень близки. Расхождения, которые есть, — это естественная часть любых отношений, и они не требуют немедленного решения.'},
+  {max:15, emoji:'💬', title:'Есть о чём поговорить', text:'Есть заметные зоны несовпадения, но они вполне управляемы, если оба готовы говорить открыто и искать решения, а не игнорировать.'},
+  {max:99, emoji:'🪐', title:'Стоит честно поговорить', text:'Стоит честно поговорить о том, насколько эти расхождения касаются принципиальных для вас вещей, а не мелочей. Это не означает, что отношения невозможны, но означает, что придётся сознательно договариваться намного чаще, чем в паре с естественным совпадением.'},
+];
+const API = 'https://jsonblob.com/api/jsonBlob';
+const DIR_ID = '019fdcc7-7f0d-7682-b80a-d3c24393e832'; // каталог кодов комнат
+const CODE_CHARS = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789';
+const LS_PREFIX = 'sovp_';
+
+/* ================= STATE ================= */
+const state = {
+  code:null, metaId:null, role:null,      // 'a' | 'b'
+  name:null, answers:Array(50).fill(0), submitted:false, cur:0,
+  meta:null, pollTimer:null, listFilter:'all', nameEdit:null,
+};
+
+/* ================= STORAGE API ================= */
+async function createBlob(obj){
+  const r = await fetch(API, {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(obj)});
+  if(!r.ok) throw new Error('create '+r.status);
+  const loc = r.headers.get('Location') || '';
+  const id = loc.split('/').pop();
+  if(!id) throw new Error('no id');
+  return id;
+}
+async function getBlob(id){
+  const r = await fetch(API + '/' + id, {headers:{'Accept':'application/json'}});
+  if(r.status===404) throw new Error('notfound');
+  if(!r.ok) throw new Error('get '+r.status);
+  return r.json();
+}
+async function putBlob(id, obj){
+  const r = await fetch(API + '/' + id, {method:'PUT', headers:{'Content-Type':'application/json'}, body:JSON.stringify(obj)});
+  if(!r.ok) throw new Error('put '+r.status);
+  return true;
+}
+
+/* ================= HELPERS ================= */
+const $ = (id)=>document.getElementById(id);
+function esc(s){return String(s).replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+function toast(msg){
+  const t = $('toast'); t.textContent = msg; t.classList.add('show');
+  clearTimeout(t._h); t._h = setTimeout(()=>t.classList.remove('show'), 2200);
+}
+function randCode(){
+  let s=''; const c = new Uint32Array(5);
+  crypto.getRandomValues(c);
+  for(let i=0;i<5;i++) s += CODE_CHARS[c[i]%CODE_CHARS.length];
+  return s;
+}
+function lsKey(){ return LS_PREFIX + (state.metaId||''); }
+function saveLS(){
+  if(!state.metaId) return;
+  try{ localStorage.setItem(lsKey(), JSON.stringify({role:state.role, name:state.name, answers:state.answers, submitted:state.submitted, code:state.code, metaId:state.metaId})); }catch(e){}
+}
+function loadLS(metaId){
+  try{
+    const raw = localStorage.getItem(LS_PREFIX + metaId);
+    if(!raw) return null;
+    return JSON.parse(raw);
+  }catch(e){ return null; }
+}
+function clearLS(){ try{ localStorage.removeItem(lsKey()); }catch(e){} }
+function shareLink(){
+  return location.origin + location.pathname + '#/r/' + state.code + '/' + state.metaId;
+}
+function tglink(){
+  const u = encodeURIComponent(shareLink());
+  return 'https://t.me/share/url?url=' + u + '&text=' + encodeURIComponent('Давай пройдём тест на совместимость 💞 Отвечай честно, я не подглядываю 😉');
+}
+async function copyText(t){
+  try{ await navigator.clipboard.writeText(t); return true; }
+  catch(e){
+    const ta = document.createElement('textarea'); ta.value = t; document.body.appendChild(ta);
+    ta.select(); const ok = document.execCommand('copy'); ta.remove(); return ok;
+  }
+}
+function catOf(diff){ return diff<=1 ? 'match' : diff===2 ? 'talk' : 'miss'; }
+const CAT = {match:['✅','Совпадение'], talk:['🟡','Стоит обсудить'], miss:['🔴','Несовпадение']};
+
+/* ================= RENDER ================= */
+const app = $('app');
+function show(html){ app.innerHTML = '<div class="fade">' + html + '</div>'; window.scrollTo(0,0); }
+
+function renderLanding(){
+  show(`
+    <div class="card hero">
+      <div class="emoji">💞</div>
+      <h1>Насколько совпадают ваши предпочтения и интересы?</h1>
+      <p>50 вопросов о досуге, быте, общении, ценностях и близости. Вы отвечаете по отдельности — сайт сам сравнивает ответы.</p>
+    </div>
+    <div class="card">
+      <button class="btn" onclick="createRoom()">✨ Создать комнату</button>
+      <div class="divider"></div>
+      <div class="join-row">
+        <input type="text" id="codeIn" maxlength="5" placeholder="КОД" autocomplete="off">
+        <button class="btn" onclick="joinByCode()">Войти</button>
+      </div>
+      <p class="hint">Второй партнёр вводит код комнаты или открывает присланную ссылку</p>
+    </div>
+    <div class="card">
+      <div class="steps">
+        <div class="step"><div class="n">1</div><div><b>Создай комнату</b><span>Получишь код и ссылку для партнёра</span></div></div>
+        <div class="step"><div class="n">2</div><div><b>Ответь на 50 вопросов</b><span>Шкала от «совсем не моё» до «точно моё»</span></div></div>
+        <div class="step"><div class="n">3</div><div><b>Дождись ответов партнёра</b><span>Результат сравнения появится сам</span></div></div>
+      </div>
+    </div>
+    <p class="note">Отвечайте честно и не подглядывайте друг у друга 😉</p>
+  `);
+}
+
+async function createRoom(){
+  const code = randCode();
+  try{
+    const aBlob = await createBlob({v:1, name:'', answers:[], ts:Date.now()});
+    const meta = {v:1, code, created:Date.now(), a:{name:'', blob:aBlob}, b:null};
+    const metaId = await createBlob(meta);
+    // регистрируем код в общем каталоге (для входа по коду)
+    try{
+      for(let i=0;i<3;i++){
+        const idx = await getBlob(DIR_ID);
+        idx.codes[code] = metaId;
+        await putBlob(DIR_ID, idx);
+        const chk = await getBlob(DIR_ID);
+        if(chk.codes && chk.codes[code]===metaId) break;
+      }
+    }catch(e){}
+    state.code = code; state.metaId = metaId; state.role = 'a';
+    state.answers = Array(50).fill(0); state.submitted = false; state.name = '';
+    saveLS();
+    renderRoomSetup(true);
+  }catch(e){ renderError('Не удалось создать комнату. Проверь интернет и попробуй ещё раз.'); }
+}
+
+async function joinByCode(){
+  const code = ($('codeIn').value||'').trim().toUpperCase();
+  if(code.length<4){ toast('Введи код из 5 символов'); return; }
+  try{
+    let metaId = null;
+    try{ const idx = await getBlob(DIR_ID); metaId = idx.codes[code]; }catch(e){}
+    if(!metaId){ toast('Комната с таким кодом не найдена'); return; }
+    location.hash = '#/r/' + code + '/' + metaId;
+  }catch(e){ toast('Не удалось проверить код. Попробуй ещё раз.'); }
+}
+
+function renderRoomSetup(isCreator){
+  const mine = loadLS(state.metaId);
+  if(mine && mine.submitted && mine.role){
+    state.role = mine.role; state.name = mine.name; state.answers = mine.answers; state.submitted = true;
+    renderWaiting(); return;
+  }
+  if(mine && mine.role){
+    state.role = mine.role; state.name = mine.name; state.answers = mine.answers; state.submitted = false;
+    renderNameStep(); return;
+  }
+  if(isCreator){
+    show(`
+      <div class="card hero">
+        <div class="emoji">🎁</div>
+        <h1>Комната создана!</h1>
+        <p>Отправь ссылку партнёру — он откроет её и ответит на те же вопросы.</p>
+      </div>
+      <div class="card code-box">
+        <p class="hint">Код комнаты</p>
+        <div class="code">${esc(state.code)}</div>
+        <p class="hint">или просто отправь ссылку</p>
+        <button class="btn" onclick="shareRoom()">📤 Поделиться ссылкой</button>
+        <div class="row" style="margin-top:10px">
+          <button class="btn soft small" onclick="copyLink()">🔗 Копировать</button>
+          <button class="btn soft small" onclick="openTg()">✈️ Telegram</button>
+        </div>
+        <div class="divider"></div>
+        <button class="btn" onclick="renderNameStep()">Начать тест →</button>
+      </div>
+    `);
+  }else{
+    renderNameStep();
+  }
+}
+
+function renderJoinConflict(){
+  show(`
+    <div class="card hero">
+      <div class="emoji">🤔</div>
+      <h2>Второй участник уже ответил</h2>
+      <p>Если это ты — открой ссылку на том же устройстве, где отвечал(а). Если начинаешь заново, прошлые ответы сотрутся.</p>
+      <button class="btn" style="margin-top:8px" onclick="joinAsSecond()">Это я, отвечаю заново</button>
+      <button class="btn ghost" style="margin-top:10px" onclick="location.hash='#/'">На главную</button>
+    </div>
+  `);
+}
+function joinAsSecond(){ renderNameStep(); }
+
+function renderNameStep(){
+  show(`
+    <div class="card">
+      <h2 style="text-align:center">${state.role==='a' ? 'Почти готово!' : 'Тебя ждут! 💌'}</h2>
+      <p class="hint" style="margin-bottom:16px">Как тебя зовут? Имя увидит только партнёр, чтобы понять, чьи ответы чьи.</p>
+      <div class="name-row"><input type="text" id="nameIn" placeholder="Твоё имя" autocomplete="off"></div>
+      <button class="btn" onclick="startTest()">Начать тест →</button>
+      <p class="hint" style="margin-top:14px">${QUESTIONS.length} вопросов · 5 блоков · минуты 3-4</p>
+    </div>
+  `);
+  const inp = $('nameIn');
+  if(state.name) inp.value = state.name;
+  setTimeout(()=>inp.focus(), 100);
+  inp.addEventListener('keydown', e=>{ if(e.key==='Enter') startTest(); });
+}
+
+function startTest(){
+  const inp = $('nameIn');
+  state.name = (inp ? inp.value.trim() : (state.name||'')).trim() || (state.role==='a' ? 'Партнёр 1' : 'Партнёр 2');
+  saveLS();
+  renderTest();
+}
+
+function renderTest(){
+  const q = QUESTIONS[state.cur];
+  const blk = BLOCKS[q.block];
+  const done = state.answers.filter(v=>v>0).length;
+  show(`
+    <div class="card">
+      <div class="prog"><i style="width:${Math.round((state.cur+1)/QUESTIONS.length*100)}%"></i></div>
+      <div class="qmeta">
+        <span class="qblock">${blk.emoji} ${blk.name}</span>
+        <span class="qcount">Вопрос ${q.n} из 10</span>
+      </div>
+      <p class="qtext">${esc(q.text)}</p>
+      <div class="scale">
+        ${SCALE.map(([v,label],i)=>`
+          <button class="${state.answers[state.cur]===i+1?'sel':''}" onclick="pick(${i+1})" id="sc${i+1}">
+            <b>${v}</b><span>${label}</span>
+          </button>`).join('')}
+      </div>
+      <div class="nav-row">
+        <button class="back" onclick="prevQ()" ${state.cur===0?'disabled':''}>← Назад</button>
+        <span class="qcount">${done}/${QUESTIONS.length} отвечено</span>
+      </div>
+    </div>
+    <p class="note">Отвечай про себя, как есть — не «как должно быть в идеале»</p>
+  `);
+}
+
+function pick(v){
+  state.answers[state.cur] = v;
+  saveLS();
+  if(state.cur < QUESTIONS.length-1){
+    state.cur++;
+    renderTest();
+  }else{
+    submitAnswers();
+  }
+}
+function prevQ(){
+  if(state.cur>0){ state.cur--; renderTest(); }
+}
+
+async function submitAnswers(){
+  state.submitted = true;
+  try{
+    const myBlob = {v:1, name:state.name, answers:state.answers, ts:Date.now()};
+    if(state.role==='a'){
+      // обновляем blob A и мету
+      const meta = await getBlob(state.metaId);
+      const blobId = meta.a.blob || await createBlob(myBlob);
+      if(!meta.a.blob){
+        meta.a = {name:state.name, blob:blobId};
+        await putBlob(state.metaId, meta);
+      }else{
+        await putBlob(blobId, myBlob);
+        if(meta.a.name !== state.name){
+          meta.a.name = state.name;
+          await putBlob(state.metaId, meta);
+        }
+      }
+      saveLS();
+    }else{
+      // роль b: создаём свой blob и регистрируем в мете
+      const blobId = await createBlob(myBlob);
+      const meta = await getBlob(state.metaId);
+      meta.b = {name:state.name, blob:blobId};
+      await putBlob(state.metaId, meta);
+      saveLS();
+    }
+    renderWaiting();
+  }catch(e){
+    state.submitted = false;
+    renderError('Не удалось сохранить ответы. Проверь интернет и нажми «Отправить» ещё раз.', true);
+  }
+}
+
+function renderError(msg, withRetry){
+  show(`
+    <div class="card hero">
+      <div class="emoji">😕</div>
+      <h2>Что-то пошло не так</h2>
+      <p>${esc(msg)}</p>
+      ${withRetry ? '<button class="btn" style="margin-top:8px" onclick="retrySubmit()">Повторить отправку</button>' : '<button class="btn ghost" style="margin-top:8px" onclick="location.hash=\'#/\'">На главную</button>'}
+    </div>
+  `);
+}
+function retrySubmit(){ submitAnswers(); }
+
+function renderWaiting(){
+  clearInterval(state.pollTimer);
+  const mine = loadLS(state.metaId);
+  if(mine && mine.submitted){ state.submitted = true; state.role = mine.role; }
+  show(`
+    <div class="card hero">
+      <div class="spin"></div>
+      <div class="wait-title">${state.submitted ? 'Ты ответил(а)! 🎉' : 'Ответы сохранены!'}</div>
+      <div class="wait-sub">Ждём ответы партнёра…</div>
+      <p class="hint" style="margin-top:14px">Не забудь отправить ссылку:</p>
+      <button class="btn" onclick="shareRoom()">📤 Поделиться ссылкой</button>
+      <div class="row" style="margin-top:10px">
+        <button class="btn soft small" onclick="copyLink()">🔗 Копировать</button>
+        <button class="btn soft small" onclick="openTg()">✈️ Telegram</button>
+      </div>
+    </div>
+  `);
+  startPolling();
+}
+
+function startPolling(){
+  clearInterval(state.pollTimer);
+  state.pollTimer = setInterval(async ()=>{
+    try{
+      const meta = await getBlob(state.metaId);
+      const other = state.role==='a' ? meta.b : meta.a;
+      if(other && other.blob){
+        const otherAns = await getBlob(other.blob);
+        if(otherAns.answers && otherAns.answers.length===QUESTIONS.length){
+          state.meta = {a: state.role==='a' ? {name:state.name, answers:state.answers} : {name:otherAns.name, answers:otherAns.answers},
+                        b: state.role==='b' ? {name:state.name, answers:state.answers} : {name:otherAns.name, answers:otherAns.answers}};
+          if(state.role==='b'){ state.meta.a.name = otherAns.name; }
+          clearInterval(state.pollTimer);
+          renderResults();
+        }
+      }
+    }catch(e){ /* тихо, пробуем дальше */ }
+  }, 3000);
+}
+
+/* ================= RESULTS ================= */
+function computeResults(){
+  const A = state.meta.a, B = state.meta.b;
+  const rows = QUESTIONS.map((q,i)=>{
+    const a = A.answers[i], b = B.answers[i];
+    const diff = Math.abs(a-b);
+    return {q, a, b, diff, cat: catOf(diff)};
+  });
+  const counts = {match:0, talk:0, miss:0};
+  rows.forEach(r=>counts[r.cat]++);
+  const verdict = VERDICTS.find(v=>counts.miss<=v.max);
+  const blocks = BLOCKS.map((blk,bi)=>{
+    const br = rows.filter(r=>r.q.block===bi);
+    const m = br.filter(r=>r.cat==='miss').length;
+    const t = br.filter(r=>r.cat==='talk').length;
+    return {blk, m, t, total:br.length};
+  });
+  return {rows, counts, verdict, blocks};
+}
+
+function renderResults(){
+  const {rows, counts, verdict, blocks} = computeResults();
+  const A = state.meta.a, B = state.meta.b;
+  const worst = blocks.slice().sort((x,y)=>(y.m+y.t)-(x.m+x.t))[0];
+  const flt = state.listFilter;
+  const shown = rows.filter(r=> flt==='all' ? true : r.cat===flt);
+  const blkLabel = bi => `${BLOCKS[bi].emoji} ${BLOCKS[bi].name}`;
+  const answ = (row, side) => {
+    const val = side==='a' ? row.a : row.b;
+    const name = side==='a' ? A.name : B.name;
+    const col = val<=2 ? '#ef4444' : val===3 ? '#f59e0b' : '#10b981';
+    return `<div class="ans"><span>${esc(name||'Партнёр')}</span><span class="pill" style="background:${col}">${val}</span></div>`;
+  };
+  show(`
+    <div class="card verdict">
+      <span class="big pulse">${verdict.emoji}</span>
+      <h2>${esc(verdict.title)}</h2>
+      <p>${esc(verdict.text)}</p>
+      <div class="chips">
+        <div class="chip good"><b>${counts.match}</b><span>✅ совпадений</span></div>
+        <div class="chip talk"><b>${counts.talk}</b><span>🟡 обсудить</span></div>
+        <div class="chip miss"><b>${counts.miss}</b><span>🔴 несовпадений</span></div>
+      </div>
+    </div>
+    <div class="card">
+      <h3 style="font-size:16px">По блокам</h3>
+      ${blocks.map(b=>{
+        const pct = (b.m+b.t)/b.total*100;
+        return `<div class="blk">
+          <div class="blk-head"><span>${b.blk.emoji} ${b.blk.name}</span><span class="m">${b.m===0?'чисто 💚':(b.m+' 🔴 · '+b.t+' 🟡')}</span></div>
+          <div class="bar"><i class="g" style="width:${100-pct}%"></i><i class="t" style="width:${b.t/b.total*100}%"></i><i class="m" style="width:${b.m/b.total*100}%"></i></div>
+        </div>`;
+      }).join('')}
+      ${worst && (worst.m+worst.t)>0 ? `<p class="hint" style="margin:12px 0 0">Больше всего расхождений — в блоке «${esc(worst.blk.name)}»</p>`:''}
+    </div>
+    <div class="card">
+      <h3 style="font-size:16px">Разбор вопросов</h3>
+      <div class="tabs">
+        <button class="tab ${flt==='all'?'on':''}" onclick="setFilter('all')">Все (${rows.length})</button>
+        <button class="tab ${flt==='talk'?'on':''}" onclick="setFilter('talk')">🟡 ${counts.talk}</button>
+        <button class="tab ${flt==='miss'?'on':''}" onclick="setFilter('miss')">🔴 ${counts.miss}</button>
+      </div>
+      ${shown.map((r,i)=>{
+        const [ic, label] = CAT[r.cat];
+        return `<div class="card qcard" style="margin-bottom:10px">
+          <div class="qt">${r.q.block+1}.${r.q.n} · ${esc(r.q.text)}</div>
+          <div class="an">${answ(r,'a')}${answ(r,'b')}<div class="diff ${r.cat}">${ic} ${label}${r.diff>1?' · разница '+r.diff:''}</div></div>
+        </div>`;
+      }).join('')}
+      ${shown.length===0 ? '<p class="hint">В этой категории пусто — отличный знак 💚</p>':''}
+    </div>
+    <div class="card">
+      <button class="btn ghost" onclick="resetAll()">🔄 Пройти заново</button>
+      <p class="hint" style="margin-top:10px">«Совпадение» — разница 0–1 · «Обсудить» — разница 2 · «Несовпадение» — разница 3–4</p>
+    </div>
+  `);
+}
+
+function setFilter(f){ state.listFilter = f; renderResults(); }
+function resetAll(){
+  clearLS();
+  state.metaId=null; state.code=null; state.role=null; state.answers=Array(50).fill(0); state.submitted=false; state.cur=0; state.listFilter='all';
+  location.hash = '#/';
+}
+
+/* ================= SHARE ================= */
+async function shareRoom(){
+  const url = shareLink();
+  if(navigator.share){
+    try{ await navigator.share({title:'Тест на совместимость 💞', text:'Давай пройдём тест на совместимость!', url}); return; }catch(e){}
+  }
+  copyLink();
+}
+async function copyLink(){
+  const ok = await copyText(shareLink());
+  toast(ok ? 'Ссылка скопирована ✅' : 'Не удалось скопировать');
+}
+function openTg(){ window.open(tglink(), '_blank'); }
+
+/* ================= ROUTER ================= */
+function route(){
+  const m = location.hash.match(/^#\/r\/([A-Za-z0-9]{4,6})\/([\w-]+)$/);
+  if(m){
+    const [, code, metaId] = m;
+    state.code = code; state.metaId = metaId;
+    const mine = loadLS(metaId);
+    if(mine && mine.role){
+      state.role = mine.role; state.name = mine.name; state.answers = mine.answers; state.submitted = mine.submitted;
+      if(mine.submitted){ renderWaiting(); }
+      else { renderNameStep(); }
+    }else{
+      state.role = 'b';
+      getBlob(metaId).then(async meta=>{
+        const aAns = meta.a && meta.a.blob ? (await getBlob(meta.a.blob).catch(()=>null)) : null;
+        const bAns = meta.b && meta.b.blob ? (await getBlob(meta.b.blob).catch(()=>null)) : null;
+        const aOk = aAns && aAns.answers && aAns.answers.length===QUESTIONS.length;
+        const bOk = bAns && bAns.answers && bAns.answers.length===QUESTIONS.length;
+        if(aOk && bOk){
+          state.meta = {a:{name:meta.a.name||'Партнёр 1', answers:aAns.answers}, b:{name:meta.b.name||'Партнёр 2', answers:bAns.answers}};
+          renderResults();
+        }else if(meta.b && meta.b.blob){
+          renderJoinConflict();
+        }else{
+          renderNameStep();
+        }
+      }).catch(()=>{ renderError('Комната не найдена. Проверь ссылку или код.'); });
+    }
+    return;
+  }
+  clearInterval(state.pollTimer);
+  state.metaId=null; state.code=null; state.role=null;
+  renderLanding();
+}
+window.addEventListener('hashchange', route);
+route();
+</script>
+</body>
+</html>
